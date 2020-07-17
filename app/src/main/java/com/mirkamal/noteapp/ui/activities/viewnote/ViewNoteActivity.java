@@ -1,8 +1,5 @@
 package com.mirkamal.noteapp.ui.activities.viewnote;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.AppCompatButton;
-
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.InputType;
@@ -12,8 +9,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+
 import com.mirkamal.noteapp.R;
-import com.mirkamal.noteapp.ui.activities.addnote.AddNoteActivity;
 import com.mirkamal.noteapp.ui.activities.main.DataBase;
 import com.mirkamal.noteapp.ui.activities.main.Note;
 
@@ -93,30 +92,20 @@ public class ViewNoteActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                String oldBody = Objects.requireNonNull(dataBase.getNotes().get(viewedNoteHeader)).getBody();
-
-                if (!viewedNoteHeader.equals(editTextHeader.getText().toString()) && !oldBody.equals(editTextBody.getText().toString()) && isEverythingValid()) {
-                    deleteFile(viewedNoteHeader);
-
-                    String[] dateTime = getDateTime();
-
-                    dataBase.getNotes().remove(viewedNoteHeader);
-                    dataBase.getNotes().put(editTextHeader.getText().toString(), new Note(editTextHeader.getText().toString(), editTextBody.getText().toString(), dateTime[0], dateTime[1]));
-
-                    FileOutputStream fos;
-                    try {
-                        fos = openFileOutput(editTextHeader.getText().toString(), MODE_PRIVATE);
-
-                        String writtenNoteBody = editTextBody.getText().toString() + "!=!" + dateTime[0] + "=" + dateTime[1];
-
-                        fos.write(writtenNoteBody.getBytes());
-                        fos.close();
-
-                        Toast.makeText(ViewNoteActivity.this, "Note saved!", Toast.LENGTH_SHORT).show();
-                        finish();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                if (!viewedNoteHeader.equals(editTextHeader.getText().toString())) {
+                    if (isEverythingValid()) {
+                        save();
+                    } else {
+                        Toast.makeText(ViewNoteActivity.this, "Something is wrong", Toast.LENGTH_SHORT).show();
                     }
+                } else if (!dataBase.getNotes().get(viewedNoteHeader).getBody().equals(editTextBody.getText().toString())) {
+                    if (isEverythingValid()) {
+                        save();
+                    } else {
+                        Toast.makeText(ViewNoteActivity.this, "Something is wrong", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(ViewNoteActivity.this, "Something is wrong", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -124,6 +113,8 @@ public class ViewNoteActivity extends AppCompatActivity {
 
     private boolean isEverythingValid() {
         if (!editTextHeader.getText().toString().isEmpty() && !editTextBody.getText().toString().isEmpty()) {
+            if (editTextHeader.getText().toString().equals(viewedNoteHeader))
+                return true;
             return !dataBase.getNotes().containsKey(editTextHeader.getText().toString());
         }
         return false;
@@ -139,5 +130,29 @@ public class ViewNoteActivity extends AppCompatActivity {
         String time = simpleDateFormatForTime.format(currentTime);
 
         return new String[] {date, time};
+    }
+
+    private void save() {
+        deleteFile(viewedNoteHeader);
+
+        String[] dateTime = getDateTime();
+
+        dataBase.getNotes().remove(viewedNoteHeader);
+        dataBase.getNotes().put(editTextHeader.getText().toString(), new Note(editTextHeader.getText().toString(), editTextBody.getText().toString(), dateTime[0], dateTime[1]));
+
+        FileOutputStream fos;
+        try {
+            fos = openFileOutput(editTextHeader.getText().toString(), MODE_PRIVATE);
+
+            String writtenNoteBody = editTextBody.getText().toString() + "!=!" + dateTime[0] + "=" + dateTime[1];
+
+            fos.write(writtenNoteBody.getBytes());
+            fos.close();
+
+            Toast.makeText(ViewNoteActivity.this, "Note saved!", Toast.LENGTH_SHORT).show();
+            finish();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
