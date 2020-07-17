@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -49,6 +50,8 @@ public class ViewNoteActivity extends AppCompatActivity {
 
         editTextHeader.setText(viewedNoteHeader);
         editTextBody.setText(Objects.requireNonNull(dataBase.getNotes().get(viewedNoteHeader)).getBody());
+        editTextBody.setInputType(InputType.TYPE_NULL);
+        editTextBody.setSingleLine(false);
 
         textViewDateTime.setText(getString(R.string.viewedatetime, Objects.requireNonNull(dataBase.getNotes().get(viewedNoteHeader)).getEditedTime().trim(), Objects.requireNonNull(dataBase.getNotes().get(viewedNoteHeader)).getEditedDate()).trim());
     }
@@ -62,7 +65,6 @@ public class ViewNoteActivity extends AppCompatActivity {
         textViewDateTime = findViewById(R.id.text_view_date_time);
 
         editTextHeader.setInputType(InputType.TYPE_NULL);
-        editTextBody.setInputType(InputType.TYPE_NULL);
 
         dataBase = DataBase.getInstance(getFilesDir());
     }
@@ -72,7 +74,9 @@ public class ViewNoteActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 editTextHeader.setInputType(InputType.TYPE_CLASS_TEXT);
-                editTextBody.setInputType(InputType.TYPE_CLASS_TEXT);
+                editTextBody.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+                editTextBody.setSingleLine(false);
+                editTextBody.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
             }
         });
 

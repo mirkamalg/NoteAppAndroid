@@ -58,7 +58,9 @@
         app:layout_constraintBottom_toTopOf="@id/text_view_date_time"
         app:layout_constraintEnd_toEndOf="@id/edit_text_header"
         app:layout_constraintStart_toStartOf="@id/edit_text_header"
-        app:layout_constraintTop_toBottomOf="@id/edit_text_header" />
+        app:layout_constraintTop_toBottomOf="@id/edit_text_header"
+        android:scrollHorizontally="false"
+        android:inputType="textMultiLine" />
 
     <TextView
         android:id="@+id/text_view_date_time"
