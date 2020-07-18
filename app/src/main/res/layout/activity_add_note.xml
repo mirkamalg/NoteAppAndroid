@@ -6,21 +6,34 @@
     android:layout_height="match_parent"
     tools:context=".ui.activities.addnote.AddNoteActivity">
 
+    <TextView
+        android:id="@+id/text_view_add_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add_note"
+        android:textColor="@android:color/black"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <EditText
         android:id="@+id/edit_text_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="32dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/bg_edit_text"
         android:elevation="8dp"
         android:hint="@string/header"
+        android:maxLength="25"
         android:maxLines="1"
         android:padding="12dp"
         android:textColor="@android:color/black"
         android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent"
-        android:maxLength="25"/>
+        app:layout_constraintTop_toBottomOf="@id/text_view_add_note"
+        tools:layout_editor_absoluteX="32dp" />
 
     <EditText
         android:id="@+id/edit_text_body"

@@ -8,4 +8,5 @@
     <string name="delete">delete</string>
     <string name="save">save</string>
     <string name="viewedatetime">Last edited: %1s %2s</string>
+    <string name="add_note">Add Note</string>
 </resources>
