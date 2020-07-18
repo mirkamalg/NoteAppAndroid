@@ -1,6 +1,7 @@
 package com.mirkamal.noteapp.ui.activities.viewnote;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
@@ -27,7 +28,7 @@ import java.util.Objects;
 
 public class ViewNoteActivity extends AppCompatActivity {
 
-    private AppCompatButton buttonEdit, buttonDelete;
+    private AppCompatButton buttonEdit, buttonDelete, buttonShare;
     private Button buttonSave;
     private EditText editTextHeader, editTextBody;
     private TextView textViewDateTime;
@@ -60,6 +61,7 @@ public class ViewNoteActivity extends AppCompatActivity {
     private void initializeUI() {
         buttonEdit = findViewById(R.id.button_edit);
         buttonDelete = findViewById(R.id.button_delete);
+        buttonShare = findViewById(R.id.button_share);
         buttonSave = findViewById(R.id.button_save);
         editTextHeader = findViewById(R.id.edit_text_header);
         editTextBody = findViewById(R.id.edit_text_body);
@@ -75,6 +77,13 @@ public class ViewNoteActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 enableEditing();
+            }
+        });
+
+        buttonShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                initializeSharing();
             }
         });
 
@@ -94,20 +103,24 @@ public class ViewNoteActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if (!viewedNoteHeader.equals(editTextHeader.getText().toString())) {
-                    if (isEverythingValid()) {
-                        save();
-                    } else {
-                        Toast.makeText(ViewNoteActivity.this, "Something is wrong", Toast.LENGTH_SHORT).show();
-                    }
-                } else if (!dataBase.getNotes().get(viewedNoteHeader).getBody().equals(editTextBody.getText().toString())) {
-                    if (isEverythingValid()) {
-                        save();
+                if (isChanged()) {
+                    if (!viewedNoteHeader.equals(editTextHeader.getText().toString())) {
+                        if (isEverythingValid()) {
+                            save();
+                        } else {
+                            Toast.makeText(ViewNoteActivity.this, "Something is wrong", Toast.LENGTH_SHORT).show();
+                        }
+                    } else if (!dataBase.getNotes().get(viewedNoteHeader).getBody().equals(editTextBody.getText().toString())) {
+                        if (isEverythingValid()) {
+                            save();
+                        } else {
+                            Toast.makeText(ViewNoteActivity.this, "Something is wrong", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
                         Toast.makeText(ViewNoteActivity.this, "Something is wrong", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(ViewNoteActivity.this, "Something is wrong", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ViewNoteActivity.this, "Note isn't changed", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -144,6 +157,19 @@ public class ViewNoteActivity extends AppCompatActivity {
         InputMethodManager inputMethodManager =  (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
         inputMethodManager.toggleSoftInputFromWindow(editTextHeader.getApplicationWindowToken(), InputMethodManager.SHOW_FORCED, 0);
         editTextHeader.setSelection(editTextHeader.getText().length());
+    }
+
+    private void initializeSharing() {
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        String shareBody = editTextBody.getText().toString();
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, editTextHeader.getText().toString());
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+        startActivity(Intent.createChooser(sharingIntent, "Share via"));
+    }
+
+    private boolean isChanged() {
+        return !editTextHeader.getText().toString().equals(viewedNoteHeader) || !editTextBody.getText().toString().equals(Objects.requireNonNull(dataBase.getNotes().get(viewedNoteHeader)).getBody());
     }
 
     private String[] getDateTime() {
