@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -73,10 +74,7 @@ public class ViewNoteActivity extends AppCompatActivity {
         buttonEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                editTextHeader.setInputType(InputType.TYPE_CLASS_TEXT);
-                editTextBody.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-                editTextBody.setSingleLine(false);
-                editTextBody.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+                enableEditing();
             }
         });
 
@@ -113,6 +111,17 @@ public class ViewNoteActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+        editTextHeader.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                enableEditing();
+                Toast.makeText(ViewNoteActivity.this, "You can edit the note", Toast.LENGTH_SHORT).show();
+
+                return true;
+            }
+        });
     }
 
     private boolean isEverythingValid() {
@@ -124,6 +133,19 @@ public class ViewNoteActivity extends AppCompatActivity {
         return false;
     }
 
+    private void enableEditing() {
+        editTextHeader.setInputType(InputType.TYPE_CLASS_TEXT);
+        editTextBody.setInputType(InputType.TYPE_TEXT_FLAG_MULTI_LINE);
+        editTextBody.setSingleLine(false);
+        editTextBody.setImeOptions(EditorInfo.IME_FLAG_NO_ENTER_ACTION);
+
+        editTextHeader.requestFocus();
+
+        InputMethodManager inputMethodManager =  (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+        inputMethodManager.toggleSoftInputFromWindow(editTextHeader.getApplicationWindowToken(), InputMethodManager.SHOW_FORCED, 0);
+        editTextHeader.setSelection(editTextHeader.getText().length());
+    }
+
     private String[] getDateTime() {
         Date currentTime = Calendar.getInstance().getTime();
 
@@ -133,7 +155,7 @@ public class ViewNoteActivity extends AppCompatActivity {
         String date = simpleDateFormat.format(currentTime);
         String time = simpleDateFormatForTime.format(currentTime);
 
-        return new String[] {date, time};
+        return new String[]{date, time};
     }
 
     private void save() {
